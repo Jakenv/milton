@@ -24,19 +24,19 @@ perf_counter()
     // http://stackoverflow.com/a/2660610/4717805
     timespec tp;
     int res = clock_gettime(CLOCK_REALTIME, &tp);
-
+    
     // TODO: Check errno and provide more information
     if ( res ) {
         milton_log("Something went wrong with clock_gettime\n");
     }
-
+    
     return tp.tv_nsec;
 }
 
 void
 platform_init(PlatformState* platform, SDL_SysWMinfo* sysinfo)
 {
-    mlt_assert(sysinfo->subsystem == SDL_SYSWM_X11);
+    //mlt_assert(sysinfo->subsystem == SDL_SYSWM_X11);
     gtk_init(NULL, NULL);
     EasyTab_Load(sysinfo->info.x11.display, sysinfo->info.x11.window);
 }
@@ -44,7 +44,7 @@ platform_init(PlatformState* platform, SDL_SysWMinfo* sysinfo)
 EasyTabResult
 platform_handle_sysevent(PlatformState* platform, SDL_SysWMEvent* sysevent)
 {
-    mlt_assert(sysevent->msg->subsystem == SDL_SYSWM_X11);
+    //mlt_assert(sysevent->msg->subsystem == SDL_SYSWM_X11);
     EasyTabResult res = EasyTab_HandleEvent(&sysevent->msg->msg.x11.event);
     return res;
 }
@@ -58,13 +58,13 @@ platform_event_tick()
 void
 platform_point_to_pixel(PlatformState* ps, v2l* inout)
 {
-
+    
 }
 
 void
 platform_point_to_pixel_i(PlatformState* ps, v2i* inout)
 {
-
+    
 }
 
 float
@@ -90,11 +90,11 @@ platform_delete_file_at_config(PATH_CHAR* fname, int error_tolerance)
         result = false;
         // Delete failed for some reason.
         if ( (error_tolerance == DeleteErrorTolerance_OK_NOT_EXIST) &&
-             (errno == EEXIST || errno == ENOENT) ) {
+            (errno == EEXIST || errno == ENOENT) ) {
             result = true;
         }
     }
-
+    
     return result;
 }
 
@@ -102,19 +102,19 @@ void
 linux_set_GTK_filter(GtkFileChooser* chooser, GtkFileFilter* filter, FileKind kind)
 {
     switch ( kind ) {
-    case FileKind_IMAGE: {
+        case FileKind_IMAGE: {
             gtk_file_filter_set_name(filter, "jpeg images (.jpg, .jpeg)");
             gtk_file_filter_add_pattern(filter, "*.[jJ][pP][gG]");
             gtk_file_filter_add_pattern(filter, "*.[jJ][pP][eE][gG]");
             gtk_file_chooser_add_filter(chooser, filter);
         } break;
-    case FileKind_MILTON_CANVAS: {
+        case FileKind_MILTON_CANVAS: {
             gtk_file_filter_set_name(filter, "milton canvases (.mlt)");
             gtk_file_filter_add_pattern(filter, "*.[mM][lL][tT]");
             gtk_file_chooser_add_filter(chooser, filter);
         } break;
-    default: {
-        INVALID_CODE_PATH;
+        default: {
+            INVALID_CODE_PATH;
         }
     }
 }
@@ -124,13 +124,13 @@ platform_dialog(char* info, char* title)
 {
     platform_cursor_show();
     GtkWidget *dialog = gtk_message_dialog_new(
-            NULL,
-            (GtkDialogFlags)0,
-            GTK_MESSAGE_INFO,
-            GTK_BUTTONS_OK,
-            "%s",
-            info
-            );
+                                               NULL,
+                                               (GtkDialogFlags)0,
+                                               GTK_MESSAGE_INFO,
+                                               GTK_BUTTONS_OK,
+                                               "%s",
+                                               info
+                                               );
     gtk_window_set_title(GTK_WINDOW(dialog), title);
     gtk_window_set_keep_above(GTK_WINDOW(dialog), TRUE);
     gtk_dialog_run(GTK_DIALOG(dialog));
@@ -142,13 +142,13 @@ platform_dialog_yesno(char* info, char* title)
 {
     platform_cursor_show();
     GtkWidget *dialog = gtk_message_dialog_new(
-            NULL,
-            (GtkDialogFlags)0,
-            GTK_MESSAGE_QUESTION,
-            GTK_BUTTONS_YES_NO,
-            "%s",
-            info
-            );
+                                               NULL,
+                                               (GtkDialogFlags)0,
+                                               GTK_MESSAGE_QUESTION,
+                                               GTK_BUTTONS_YES_NO,
+                                               "%s",
+                                               info
+                                               );
     gtk_window_set_title(GTK_WINDOW(dialog), title);
     gtk_window_set_keep_above(GTK_WINDOW(dialog), TRUE);
     if ( gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_YES ) {
@@ -164,21 +164,21 @@ platform_dialog_yesnocancel(char* info, char* title)
 {
     platform_cursor_show();
     GtkWidget *dialog = gtk_message_dialog_new(
-            NULL,
-            (GtkDialogFlags)0,
-            GTK_MESSAGE_QUESTION,
-            GTK_BUTTONS_NONE,
-            "%s",
-            info
-            );
+                                               NULL,
+                                               (GtkDialogFlags)0,
+                                               GTK_MESSAGE_QUESTION,
+                                               GTK_BUTTONS_NONE,
+                                               "%s",
+                                               info
+                                               );
     gtk_dialog_add_buttons(
-        GTK_DIALOG(dialog),
-        "Yes", GTK_RESPONSE_YES,
-        "No", GTK_RESPONSE_NO,
-        "Cancel", GTK_RESPONSE_CANCEL,
-        NULL
-        );
-
+                           GTK_DIALOG(dialog),
+                           "Yes", GTK_RESPONSE_YES,
+                           "No", GTK_RESPONSE_NO,
+                           "Cancel", GTK_RESPONSE_CANCEL,
+                           NULL
+                           );
+    
     gtk_window_set_title(GTK_WINDOW(dialog), title);
     gtk_window_set_keep_above(GTK_WINDOW(dialog), TRUE);
     gint answer = gtk_dialog_run(GTK_DIALOG(dialog));
@@ -196,7 +196,7 @@ platform_fname_at_config(PATH_CHAR* fname, size_t len)
     // we'll copy fname to file_name so that we can edit fname to our liking then later append fname to it.
     char *string_copy = (char*)mlt_calloc(1, len, "Strings");
     size_t copy_length = strlen(fname);
-
+    
     if ( string_copy ) {
         strncpy(string_copy, fname, len);
         char *folder;
@@ -217,7 +217,7 @@ platform_fname_at_config(PATH_CHAR* fname, size_t len)
             strcat(fname, "/");
             strcat(fname, string_copy);
         }
-
+        
         mlt_free(string_copy, "Strings");
     }
 }
@@ -259,7 +259,7 @@ b32
 platform_move_file(PATH_CHAR* src, PATH_CHAR* dest)
 {
     int res = rename(src, dest);
-
+    
     return res == 0;
 }
 
@@ -268,13 +268,13 @@ platform_open_dialog(FileKind kind)
 {
     platform_cursor_show();
     GtkWidget *dialog = gtk_file_chooser_dialog_new(
-            "Open File",
-            NULL,
-            GTK_FILE_CHOOSER_ACTION_OPEN,
-            "Cancel", GTK_RESPONSE_CANCEL,
-            "Open", GTK_RESPONSE_ACCEPT,
-            NULL
-            );
+                                                    "Open File",
+                                                    NULL,
+                                                    GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                    "Cancel", GTK_RESPONSE_CANCEL,
+                                                    "Open", GTK_RESPONSE_ACCEPT,
+                                                    NULL
+                                                    );
     GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
     GtkFileFilter *filter = gtk_file_filter_new();
     linux_set_GTK_filter(chooser, filter, kind);
@@ -286,7 +286,7 @@ platform_open_dialog(FileKind kind)
     }
     gchar *gtk_filename = gtk_file_chooser_get_filename(chooser);
     PATH_CHAR* open_filename = (PATH_CHAR*)mlt_calloc(MAX_PATH, sizeof(PATH_CHAR), "Strings");
-
+    
     PATH_STRNCPY(open_filename, gtk_filename, MAX_PATH);
     g_free(gtk_filename);
     gtk_widget_destroy(dialog);
@@ -310,13 +310,13 @@ platform_save_dialog(FileKind kind)
 {
     platform_cursor_show();
     GtkWidget *dialog = gtk_file_chooser_dialog_new(
-            "Save File",
-            NULL,
-            GTK_FILE_CHOOSER_ACTION_SAVE,
-            "Cancel", GTK_RESPONSE_CANCEL,
-            "Save", GTK_RESPONSE_ACCEPT,
-            NULL
-            );
+                                                    "Save File",
+                                                    NULL,
+                                                    GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                    "Cancel", GTK_RESPONSE_CANCEL,
+                                                    "Save", GTK_RESPONSE_ACCEPT,
+                                                    NULL
+                                                    );
     GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
     GtkFileFilter *filter = gtk_file_filter_new();
     linux_set_GTK_filter(chooser, filter, kind);
@@ -330,7 +330,7 @@ platform_save_dialog(FileKind kind)
     }
     gchar *gtk_filename = gtk_file_chooser_get_filename(chooser);
     PATH_CHAR* save_filename = (PATH_CHAR*)mlt_calloc(1, MAX_PATH*sizeof(PATH_CHAR), "Strings");
-
+    
     PATH_STRNCPY(save_filename, gtk_filename, MAX_PATH);
     g_free(gtk_filename);
     gtk_widget_destroy(dialog);
@@ -362,20 +362,20 @@ platform_get_gl_proc(char* name)
 void
 platform_deinit(PlatformState* platform)
 {
-
+    
 }
 
 void
 platform_setup_cursor(Arena* arena, PlatformState* platform)
 {
-
+    
 }
 
 v2i
 platform_cursor_get_position(PlatformState* platform)
 {
     v2i pos;
-
+    
     SDL_GetMouseState(&pos.x, &pos.y);
     return pos;
 }

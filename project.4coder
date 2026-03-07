@@ -1,0 +1,44 @@
+version(2);
+project_name = "Milton";
+
+indent_width = "2";
+default_tab_width = "2";
+
+patterns =
+{
+  "*.c",
+  "*.cc",
+  "*.cpp",
+  "*.h",
+  "*.inc",
+  "*.hpp",
+  "*.bat",
+  "*.sh",
+  "*.4coder",
+  "*.glsl",
+  "*.bfs",
+  "*.html",
+  "*.txt",
+  "*.md",
+  "*.mdesk",
+  "*.asm",
+};
+
+paths =
+{
+  { .path = ".",     .recursive = false, .relative = true, },
+  { .path = "src",   .recursive = true , .relative = true, },
+};
+
+load_paths =
+{
+  .win = paths,
+  .linux = paths,
+};
+
+fkey_command =
+{
+  .F1 = "f1",
+  .F2 = "f2",
+  .F3 = "f3",
+};
