@@ -21,50 +21,50 @@
 
 struct MiltonGLState
 {
-    GLuint quad_program;
-    GLuint texture;
-    GLuint vbo;
+  GLuint quad_program;
+  GLuint texture;
+  GLuint vbo;
 };
 
 enum class MiltonMode
 {
-    PEN,
-    ERASER,
-    PRIMITIVE_LINE,
-    PRIMITIVE_RECTANGLE,
-    PRIMITIVE_GRID,
-    EXPORTING,
-    EYEDROPPER,
-    HISTORY,
-    PEEK_OUT,
-    DRAG_BRUSH_SIZE,
-    DRAG_ZOOM,
-    TRANSFORM,  // Scale and rotate
-
-    MODE_COUNT,
+  PEN,
+  ERASER,
+  PRIMITIVE_LINE,
+  PRIMITIVE_RECTANGLE,
+  PRIMITIVE_GRID,
+  EXPORTING,
+  EYEDROPPER,
+  HISTORY,
+  PEEK_OUT,
+  DRAG_BRUSH_SIZE,
+  DRAG_ZOOM,
+  TRANSFORM,  // Scale and rotate
+  
+  MODE_COUNT,
 };
 
 enum BrushEnum
 {
-    BrushEnum_PEN,
-    BrushEnum_ERASER,
-    BrushEnum_PRIMITIVE,
-
-    BrushEnum_NOBRUSH,  // Non-painting modes
-
-    BrushEnum_COUNT,
+  BrushEnum_PEN,
+  BrushEnum_ERASER,
+  BrushEnum_PRIMITIVE,
+  
+  BrushEnum_NOBRUSH,  // Non-painting modes
+  
+  BrushEnum_COUNT,
 };
 
 enum HistoryElementType
 {
-    HistoryElement_STROKE_ADD,
-    //HistoryElement_LAYER_DELETE,
+  HistoryElement_STROKE_ADD,
+  //HistoryElement_LAYER_DELETE,
 };
 
 struct HistoryElement
 {
-    int type;
-    i32 layer_id;  // HistoryElement_STROKE_ADD
+  int type;
+  i32 layer_id;  // HistoryElement_STROKE_ADD
 };
 
 struct MiltonGui;
@@ -77,233 +77,247 @@ struct MiltonBindings;
 // Stuff than can be reset when unloading a canvas
 struct CanvasState
 {
-    Arena  arena;
-
-    i32         layer_guid;  // to create unique ids;
-    Layer*      root_layer;
-    Layer*      working_layer;
-
-    DArray<HistoryElement> history;
-    DArray<HistoryElement> redo_stack;
-    //Layer**         layer_graveyard;
-    DArray<Stroke>         stroke_graveyard;
-
-    i32         stroke_id_count;
+  Arena  arena;
+  
+  i32         layer_guid;  // to create unique ids;
+  Layer*      root_layer;
+  Layer*      working_layer;
+  
+  DArray<HistoryElement> history;
+  DArray<HistoryElement> redo_stack;
+  //Layer**         layer_graveyard;
+  DArray<Stroke>         stroke_graveyard;
+  
+  i32         stroke_id_count;
 };
 
 enum PrimitiveFSM
 {
-    Primitive_WAITING,
-    Primitive_DRAWING,
-    Primitive_DONE,
+  Primitive_WAITING,
+  Primitive_DRAWING,
+  Primitive_DONE,
+};
+
+enum StylusButtonFunction
+{
+  STYLUS_DEFAULT,
+  STYLUS_ERASER,
+  STYLUS_BRUSH,
+  STYLUS_DECB,
+  STYLUS_INCB,
+  STYLUS_ZOOM,
 };
 
 #pragma pack(push, 1)
 struct MiltonSettings
 {
-    v3f background_color;
-    float peek_out_increment;
-
-    MiltonBindings bindings;
+  v3f background_color;
+  float peek_out_increment;
+  
+  StylusButtonFunction stylus_upper_button;
+  StylusButtonFunction stylus_upper_ctrl_button;
+  
+  MiltonBindings bindings;
 };
 #pragma pack(pop)
 
 struct Eyedropper
 {
-    u8* buffer;
+  u8* buffer;
 };
 
 struct SmoothFilter
 {
-    b32 first;
-    v2f prediction;
-    v2l center;
+  b32 first;
+  v2f prediction;
+  v2l center;
 };
 
 enum PeekOutFlags
 {
-    PeekOut_CLICK_TO_EXIT = (1<<0),
+  PeekOut_CLICK_TO_EXIT = (1<<0),
 };
 
 struct PeekOut
 {
-    WallTime begin_anim_time;
-    b32 peek_out_ended;
-
-    i64 high_scale;
-    i64 low_scale;
-
-    v2l begin_pan;
-    v2l end_pan;
-
-    int flags /*PeekOutFlags*/;
+  WallTime begin_anim_time;
+  b32 peek_out_ended;
+  
+  i64 high_scale;
+  i64 low_scale;
+  
+  v2l begin_pan;
+  v2l end_pan;
+  
+  int flags /*PeekOutFlags*/;
 };
 
 struct RenderSettings
 {
-    b32 do_full_redraw;
+  b32 do_full_redraw;
 };
 
 struct MiltonDragBrush
 {
-    i32 start_size;
-    i32 brush_idx;
-    v2i start_point;
+  i32 start_size;
+  i32 brush_idx;
+  v2i start_point;
 };
 
 struct MiltonDragZoom
 {
-    i64 start_size;
-    v2i start_point;
-    v2i new_zoom_center;
+  i64 start_size;
+  v2i start_point;
+  v2i new_zoom_center;
 };
 
 enum class TransformModeFSM
 {
-    START,
-    ROTATING,
+  START,
+  ROTATING,
 };
 
 struct TransformMode
 {
-    TransformModeFSM fsm;
-    v2f last_point;
+  TransformModeFSM fsm;
+  v2f last_point;
 };
 
 struct Milton
 {
-    u32 flags;  // See MiltonStateFlags
-
-    i32 max_width;
-    i32 max_height;
-
+  u32 flags;  // See MiltonStateFlags
+  
+  i32 max_width;
+  i32 max_height;
+  
 #if MILTON_SAVE_ASYNC
-    SDL_mutex*  save_mutex;
-    i64         save_flag;   // See SaveEnum
-    SDL_cond*   save_cond;
-    SDL_Thread* save_thread;
+  SDL_mutex*  save_mutex;
+  i64         save_flag;   // See SaveEnum
+  SDL_cond*   save_cond;
+  SDL_Thread* save_thread;
 #endif
-    PlatformState* platform;
-
-    // ---- The Painting
-    CanvasState*    canvas;
-    CanvasView*     view;
-
-    Eyedropper* eyedropper;
-
-    Brush       brushes[BrushEnum_COUNT];
-    i32         brush_sizes[BrushEnum_COUNT];  // In screen pixels
-
-    Stroke      working_stroke;
-    // ----  // gui->picker.info also stored
-
-    // Read only
-    // Set these with milton_switch_mode and milton_leave_mode
-    MiltonMode current_mode;
-    MiltonMode mode_stack[MODE_STACK_MAX];
-    sz n_mode_stack;
-
-    enum GuiVisibleCategory {
-        GuiVisibleCategory_DRAWING,
-        GuiVisibleCategory_EXPORTING,
-        GuiVisibleCategory_OTHER,
-
-        GuiVisibleCategory_COUNT,
-    };
-    bool mode_gui_visibility[GuiVisibleCategory_COUNT];
-
-    PrimitiveFSM primitive_fsm;
-
-    SmoothFilter* smooth_filter;
-
-    RenderSettings render_settings;
-    RenderBackend* renderer;
-
-    // Heap
-    Arena       root_arena;     // Lives forever
-    Arena       canvas_arena;   // Gets reset every canvas.
-
-    // Subsystems
-    MiltonGLState* gl;
-    MiltonGui* gui;
-    MiltonSettings* settings;  // User settings
-    MiltonPersist* persist;
-    MiltonDragBrush* drag_brush;
-    MiltonDragZoom* drag_zoom;
-    PeekOut* peek_out;
-    TransformMode* transform;
-
-    // Primitives
-    i32 grid_rows;
-    i32 grid_columns;
-
+  PlatformState* platform;
+  
+  // ---- The Painting
+  CanvasState*    canvas;
+  CanvasView*     view;
+  
+  Eyedropper* eyedropper;
+  
+  Brush       brushes[BrushEnum_COUNT];
+  i32         brush_sizes[BrushEnum_COUNT];  // In screen pixels
+  
+  Stroke      working_stroke;
+  // ----  // gui->picker.info also stored
+  
+  // Read only
+  // Set these with milton_switch_mode and milton_leave_mode
+  MiltonMode current_mode;
+  MiltonMode mode_stack[MODE_STACK_MAX];
+  sz n_mode_stack;
+  
+  enum GuiVisibleCategory {
+    GuiVisibleCategory_DRAWING,
+    GuiVisibleCategory_EXPORTING,
+    GuiVisibleCategory_OTHER,
+    
+    GuiVisibleCategory_COUNT,
+  };
+  bool mode_gui_visibility[GuiVisibleCategory_COUNT];
+  
+  PrimitiveFSM primitive_fsm;
+  
+  SmoothFilter* smooth_filter;
+  
+  RenderSettings render_settings;
+  RenderBackend* renderer;
+  
+  // Heap
+  Arena       root_arena;     // Lives forever
+  Arena       canvas_arena;   // Gets reset every canvas.
+  
+  // Subsystems
+  MiltonGLState* gl;
+  MiltonGui* gui;
+  MiltonSettings* settings;  // User settings
+  MiltonPersist* persist;
+  MiltonDragBrush* drag_brush;
+  MiltonDragZoom* drag_zoom;
+  PeekOut* peek_out;
+  TransformMode* transform;
+  
+  // Primitives
+  i32 grid_rows;
+  i32 grid_columns;
+  
 #if MILTON_ENABLE_PROFILING
-    b32 viz_window_visible;
-    GraphData graph_frame;
+  b32 viz_window_visible;
+  GraphData graph_frame;
 #endif
 };
 
 enum MiltonStateFlags
 {
-    MiltonStateFlags_RUNNING                = 1 << 0,
-    MiltonStateFlags_FINISH_CURRENT_STROKE  = 1 << 1,
-                                            // 1 << 2 unused
-    MiltonStateFlags_JUST_SAVED             = 1 << 3,
-    MiltonStateFlags_NEW_CANVAS             = 1 << 4,
-    MiltonStateFlags_DEFAULT_CANVAS         = 1 << 5,
-                                            // 1 << 6 unused
-                                            // 1 << 7 unused
-                                            // 1 << 8 unused
-    MiltonStateFlags_LAST_SAVE_FAILED       = 1 << 9,
-    MiltonStateFlags_MOVE_FILE_FAILED       = 1 << 10,
-    MiltonStateFlags_BRUSH_SMOOTHING        = 1 << 11,
+  MiltonStateFlags_RUNNING                = 1 << 0,
+  MiltonStateFlags_FINISH_CURRENT_STROKE  = 1 << 1,
+  // 1 << 2 unused
+  MiltonStateFlags_JUST_SAVED             = 1 << 3,
+  MiltonStateFlags_NEW_CANVAS             = 1 << 4,
+  MiltonStateFlags_DEFAULT_CANVAS         = 1 << 5,
+  // 1 << 6 unused
+  // 1 << 7 unused
+  // 1 << 8 unused
+  MiltonStateFlags_LAST_SAVE_FAILED       = 1 << 9,
+  MiltonStateFlags_MOVE_FILE_FAILED       = 1 << 10,
+  MiltonStateFlags_BRUSH_SMOOTHING        = 1 << 11,
 };
 
 enum MiltonInputFlags
 {
-    MiltonInputFlags_NONE = 0,
-
-    MiltonInputFlags_FULL_REFRESH        = 1 << 0,
-    MiltonInputFlags_END_STROKE          = 1 << 1,
-    MiltonInputFlags_UNDO                = 1 << 2,
-    MiltonInputFlags_REDO                = 1 << 3,
-                                        // 1 << 4 free to use
-                                        // 1 << 5 free to use
-                                        // 1 << 6 free
-    MiltonInputFlags_PANNING             = 1 << 7,
-    MiltonInputFlags_IMGUI_GRABBED_INPUT = 1 << 8,
-    MiltonInputFlags_SAVE_FILE           = 1 << 9,
-    MiltonInputFlags_OPEN_FILE           = 1 << 10,
-                                        // 1 << 11 free
-    MiltonInputFlags_CLICKUP             = 1 << 12,
+  MiltonInputFlags_NONE = 0,
+  
+  MiltonInputFlags_FULL_REFRESH        = 1 << 0,
+  MiltonInputFlags_END_STROKE          = 1 << 1,
+  MiltonInputFlags_UNDO                = 1 << 2,
+  MiltonInputFlags_REDO                = 1 << 3,
+  // 1 << 4 free to use
+  // 1 << 5 free to use
+  // 1 << 6 free
+  MiltonInputFlags_PANNING             = 1 << 7,
+  MiltonInputFlags_IMGUI_GRABBED_INPUT = 1 << 8,
+  MiltonInputFlags_SAVE_FILE           = 1 << 9,
+  MiltonInputFlags_OPEN_FILE           = 1 << 10,
+  // 1 << 11 free
+  MiltonInputFlags_CLICKUP             = 1 << 12,
 };
 
 struct MiltonInput
 {
-    int flags;  // MiltonInputFlags
-    MiltonMode mode_to_set;
-
-    v2l  points[MAX_INPUT_BUFFER_ELEMS];
-    f32  pressures[MAX_INPUT_BUFFER_ELEMS];
-    i32  input_count;
-
-    v2i  click;
-    i32  scale;
-    v2l  pan_delta;
+  int flags;  // MiltonInputFlags
+  MiltonMode mode_to_set;
+  MiltonMode saved_mode;
+  
+  v2l  points[MAX_INPUT_BUFFER_ELEMS];
+  f32  pressures[MAX_INPUT_BUFFER_ELEMS];
+  i32  input_count;
+  
+  v2i  click;
+  i32  scale;
+  v2l  pan_delta;
 };
 
 
 enum SaveEnum
 {
-    SaveEnum_WAITING,
-    SaveEnum_SAVE_REQUESTED,
-    SaveEnum_KILL,
+  SaveEnum_WAITING,
+  SaveEnum_SAVE_REQUESTED,
+  SaveEnum_KILL,
 };
 
 enum MiltonInitFlags
 {
-    MiltonInit_DEFAULT = 0,
-    MiltonInit_FOR_TEST = 1<<0,  // No graphics layer. No reading from disk
+  MiltonInit_DEFAULT = 0,
+  MiltonInit_FOR_TEST = 1<<0,  // No graphics layer. No reading from disk
 };
 void milton_init(Milton* milton, i32 width, i32 height, f32 ui_scale, PATH_CHAR* file_to_open, MiltonInitFlags init_flags = MiltonInit_DEFAULT);
 
@@ -372,3 +386,5 @@ void drag_brush_size_stop(Milton* milton);
 
 void drag_zoom_start(Milton* milton, v2i pointer);
 void drag_zoom_stop(Milton* milton);
+
+void stylus_buttons_exec_function(MiltonInput *milton_input, Milton *milton, StylusButtonFunction mode);
