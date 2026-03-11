@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Milton
+GenericName=Painting Application
+Comment=Infinite canvas painting app
+Exec=milton
+Icon=milton
+Terminal=false
+Categories=Graphics;2DGraphics;RasterGraphics;
+MimeType=application/x-mlt;
