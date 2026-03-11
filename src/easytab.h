@@ -753,8 +753,8 @@ EasyTabResult EasyTab_Load(Display* Disp, Window Win)
   {
     if (!strstr(Devices[i].name, "xwayland-tablet stylus:1") &&
         !strstr(Devices[i].name, "xwayland-tablet eraser:1") &&
-        !strstr(Devices[i].name, "xwayland-tablet cursor:1") &&
-        !strstr(Devices[i].name, "xwayland-tablet pad:1")) { continue; }
+        !strstr(Devices[i].name, "xwayland-tablet curosr:1") &&
+        !strstr(Devices[i].name, "xwayland-tablet-pad:1")) { continue; }
     
     EasyTab->Device = XOpenDevice(Disp, Devices[i].id);
     XAnyClassPtr ClassPtr = Devices[i].inputclassinfo;
@@ -840,6 +840,11 @@ EasyTabResult EasyTab_HandleEvent(XEvent* Event)
 {
   EasyTab->NumPackets = 0;
   
+  //if (Event->type != 35 && Event->type != 33 && Event->type != 71 && Event->type != 6)
+  //{
+  //printf("Event->type: %d\n", Event->type);
+  //}
+  
   if (Event->type == EasyTab->MotionType)
   {
     XDeviceMotionEvent* MotionEvent = (XDeviceMotionEvent*)(Event);
@@ -858,11 +863,11 @@ EasyTabResult EasyTab_HandleEvent(XEvent* Event)
     
     EasyTab->NumPackets = 1;
   }
-  else if (Event->type == EasyTab->ProximityTypeIn)
+  else if (Event->type == 4)
   {
     EasyTab->PenInProximity = EASYTAB_TRUE;
   }
-  else if (Event->type == EasyTab->ProximityTypeOut)
+  else if (Event->type == 5)
   {
     EasyTab->PenInProximity = EASYTAB_FALSE;
   }
@@ -871,7 +876,7 @@ EasyTabResult EasyTab_HandleEvent(XEvent* Event)
     XDeviceButtonPressedEvent *ButtonEvent = (XDeviceButtonPressedEvent*)(Event);
     if(ButtonEvent->button == Button2)
       EasyTab->Buttons |= EasyTab_Buttons_Pen_Lower;
-    else if (ButtonEvent->button == Button3) 
+    else if (ButtonEvent->button == Button3)
       EasyTab->Buttons |= EasyTab_Buttons_Pen_Upper;
   }
   else if (Event->type == EasyTab->ButtonTypeRelease)
