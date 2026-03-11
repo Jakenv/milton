@@ -751,10 +751,8 @@ EasyTabResult EasyTab_Load(Display* Disp, Window Win)
   
   for (int32_t i = 0; i < Count; i++)
   {
-    if (!strstr(Devices[i].name, "xwayland-tablet stylus:1") &&
-        !strstr(Devices[i].name, "xwayland-tablet eraser:1") &&
-        !strstr(Devices[i].name, "xwayland-tablet curosr:1") &&
-        !strstr(Devices[i].name, "xwayland-tablet-pad:1")) { continue; }
+    if (!strstr(Devices[i].name, "stylus") &&
+        !strstr(Devices[i].name, "eraser")) { continue; }
     
     EasyTab->Device = XOpenDevice(Disp, Devices[i].id);
     XAnyClassPtr ClassPtr = Devices[i].inputclassinfo;
@@ -839,12 +837,12 @@ EasyTab->NumEventClasses++;                                     \
 EasyTabResult EasyTab_HandleEvent(XEvent* Event)
 {
   EasyTab->NumPackets = 0;
-  
-  //if (Event->type != 35 && Event->type != 33 && Event->type != 71 && Event->type != 6)
-  //{
-  //printf("Event->type: %d\n", Event->type);
-  //}
-  
+  /*
+  if (Event->type != 35 && Event->type != 33 && Event->type != 71 && Event->type != 6)
+  {
+    printf("Event->type: %d\n", Event->type);
+  }
+  */
   if (Event->type == EasyTab->MotionType)
   {
     XDeviceMotionEvent* MotionEvent = (XDeviceMotionEvent*)(Event);
@@ -863,11 +861,11 @@ EasyTabResult EasyTab_HandleEvent(XEvent* Event)
     
     EasyTab->NumPackets = 1;
   }
-  else if (Event->type == 4)
+  else if (Event->type == 4) //NOTE: This is bad, it should be but EasyTab->PoximityTypeIn but then it tablet is not working
   {
     EasyTab->PenInProximity = EASYTAB_TRUE;
   }
-  else if (Event->type == 5)
+  else if (Event->type == 5) //NOTE: This is bad, it should be but EasyTab->PoximityTypeOut but then it tablet is not working
   {
     EasyTab->PenInProximity = EASYTAB_FALSE;
   }

@@ -10,7 +10,7 @@ add_executable(shadergen
   src/shadergen.cc
 )
 
-set(SDL2DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/SDL2-2.0.8)
+set(SDL2DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/SDL2-2.30.11)
 
 FILE (GLOB ShaderSources src/*.glsl third_party/*.glsl)
 
@@ -74,13 +74,12 @@ endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 
   find_package(OpenGL REQUIRED)
-  # find_package(GTK2 2.6 REQUIRED gtk)
   find_package(X11 REQUIRED)
   find_library(XINPUT_LIBRARY libXi.so)
   find_package(Threads REQUIRED)
   find_package(PkgConfig REQUIRED)
   pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
-  pkg_check_modules(SDL2 REQUIRED IMPORTED_TARGET sdl2)
+  #pkg_check_modules(SDL2 REQUIRED IMPORTED_TARGET sdl2)
 
   if(XINPUT_LIBRARY STREQUAL "XINPUT_LIBRARY-NOTFOUND")
       message(FATAL_ERROR "Could not find libXi.so")
@@ -98,14 +97,17 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     ${GTK2_INCLUDE_DIRS}
     ${X11_INCLUDE_DIR}
     ${OPENGL_INCLUDE_DIR}
+    ${SDL2DIR}/build/linux64/include/SDL2
   )
 
   target_link_libraries(Milton
-    PkgConfig::SDL2
+    #PkgConfig::SDL2
     PkgConfig::GTK
     ${X11_LIBRARIES}
     ${OPENGL_LIBRARIES}
     ${XINPUT_LIBRARY}
+    ${SDL2DIR}/build/linux64/lib/libSDL2maind.a
+    ${SDL2DIR}/build/linux64/lib/libSDL2d.a
     ${CMAKE_THREAD_LIBS_INIT}
     ${CMAKE_DL_LIBS}
     )
