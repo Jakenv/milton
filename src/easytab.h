@@ -861,29 +861,45 @@ EasyTabResult EasyTab_HandleEvent(XEvent* Event)
     
     EasyTab->NumPackets = 1;
   }
-  else if (Event->type == 4) //NOTE: This is bad, it should be but EasyTab->PoximityTypeIn but then it tablet is not working
+  else if (Event->type == EasyTab->ProximityTypeIn)
   {
     EasyTab->PenInProximity = EASYTAB_TRUE;
   }
-  else if (Event->type == 5) //NOTE: This is bad, it should be but EasyTab->PoximityTypeOut but then it tablet is not working
+  else if (Event->type == EasyTab->ProximityTypeOut)
   {
     EasyTab->PenInProximity = EASYTAB_FALSE;
   }
   else if (Event->type == EasyTab->ButtonTypePress)
   {
     XDeviceButtonPressedEvent *ButtonEvent = (XDeviceButtonPressedEvent*)(Event);
-    if(ButtonEvent->button == Button2)
+    if (ButtonEvent->button == Button1)
+    {
+      EasyTab->PenInProximity = EASYTAB_TRUE;
+    }
+    else if(ButtonEvent->button == Button2)
+    {
       EasyTab->Buttons |= EasyTab_Buttons_Pen_Lower;
+    }
     else if (ButtonEvent->button == Button3)
+    {
       EasyTab->Buttons |= EasyTab_Buttons_Pen_Upper;
+    }
   }
   else if (Event->type == EasyTab->ButtonTypeRelease)
   {
     XDeviceButtonPressedEvent* ButtonEvent = (XDeviceButtonPressedEvent*)(Event);
-    if(ButtonEvent->button == Button2)
+    if (ButtonEvent->button == Button1)
+    {
+      EasyTab->PenInProximity = EASYTAB_FALSE;
+    }
+    else if(ButtonEvent->button == Button2)
+    {
       EasyTab->Buttons &= ~EasyTab_Buttons_Pen_Lower;
+    }
     else if(ButtonEvent->button == Button3)
+    {
       EasyTab->Buttons &= ~EasyTab_Buttons_Pen_Upper;
+    }
   }
   else
   {
